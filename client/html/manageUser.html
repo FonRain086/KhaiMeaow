@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/manageUser.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/admin/manageProduct">Product</a></li>
+                <li class ="clickcomplete"><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Background -->
+    <div class="ellipse"></div>
+
+    <div class="bgContainer">
+
+        <div class="contentBox">
+
+            <h1 class="title">User Management</h1>
+
+            <form id="searchForm" class="searchForm">
+
+                <div class="formRow">
+
+                    <div class="formGroup">
+                        <label for="searchBox">Search</label>
+                        <input type="text" name="searchBox" id="searchBox" placeholder="Search user...">
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="idsearch">Admin ID</label>
+                        <input type="text" name="idsearch" id="idsearch">
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="namesearch">Name</label>
+                        <input type="text" name="namesearch" id="namesearch">
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="lnamesearch">Lastname</label>
+                        <input type="text" name="lnamesearch" id="lnamesearch">
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="phonesearch">Phone</label>
+                        <input type="tel" name="phonesearch" id="phonesearch">
+                    </div>
+
+                    <div class="formGroup">
+                        <label for="mailsearch">Email</label>
+                        <input type="text" name="mailsearch" id="mailsearch">
+                    </div>
+
+                </div>
+
+                <div class="btnGroup">
+                    <button type="submit" class="btn search">Search</button>
+                    <button type="button" class="btn clear">Clear</button>
+                </div>
+
+            </form>
+             <div class="addUserBox">
+                <button id="addUserBtn" class="btn addUser" onclick="window.location.href='/admin/manageUser/addUser'">
+                    Add User
+                </button>
+            </div>
+
+            <!-- Display Table -->
+            <div class="tableWrapper">
+                <table id="userTable" class="styledTable">
+                    <thead>
+                        <tr>
+                            <th>Admin ID</th>
+                            <th>ชื่อ</th>
+                            <th>นามสกุล</th>
+                            <th>เบอร์โทร</th>
+                            <th>Email</th>
+                            <th>แก้ไข</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        
+        fetch('http://localhost:8080/check-auth', { 
+            credentials: 'include' 
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            console.log("Authorized as:", data.user.email);
+        }).catch(() => {
+            window.location.href = 'http://localhost:3030/acc'; 
+        });
+
+        const tableBody = document.querySelector('#userTable tbody');
+        // Load Data
+        function loadUser(keyword = '') {
+            
+            const url = keyword ? `http://localhost:8080/api/users?${keyword}`
+                                : `http://localhost:8080/api/users`;
+
+            fetch(url, {
+                credentials: 'include'
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Data fetched:', data);
+                    tableBody.innerHTML = ''; //clear table
+
+                    if (data.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="6">No data found</td></tr>`;
+                        return;
+                    }
+
+                    // Display Table
+                    let html = '';
+                    data.forEach(row => {
+                        html += `
+                    <tr>
+                        <td>${row.AdminID}</td>
+                        <td>${row.Admin_Firstname}</td>
+                        <td>${row.Admin_Lastname}</td>
+                        <td>${row.Admin_Phone}</td>
+                        <td>${row.Admin_Email}</td>
+                        <td><button class="editButton" onclick="editUser(${row.AdminID})">Edit</button></td>
+                    </tr>
+                    `;
+                    });
+
+                    tableBody.innerHTML = html;
+                })
+                .catch(err => {
+                    location = 'http://localhost:3030/acc';
+                    console.log('An error occurred while loading data:', err)
+                });
+        }
+
+        function editUser(adminID) {
+            // redirect to edit page for own id
+            window.location.href = `/admin/manageUser/editUser?id=${adminID}`;
+        }
+
+        // call loadUser function
+        loadUser();
+
+         // Event Search Form
+        document.getElementById('searchForm').addEventListener('submit', e => {
+            e.preventDefault();
+            
+            const params = new URLSearchParams();
+
+            let q = document.getElementById('searchBox').value.trim();
+            let aid = document.getElementById('idsearch').value.trim();
+            let name = document.getElementById('namesearch').value.trim();
+            let lname = document.getElementById('lnamesearch').value.trim();
+            let phone = document.getElementById('phonesearch').value.trim();
+            let mail = document.getElementById('mailsearch').value.trim();
+
+            if (q) params.append("q", q);
+            if (aid) params.append("AdminID", aid);
+            if (name) params.append("Admin_Firstname", name);
+            if (lname) params.append("Admin_Lastname", lname);
+            if (phone) params.append("Admin_Phone", phone);
+            if (mail) params.append("Admin_Email", mail);
+
+            loadUser(params.toString());
+        });
+
+            // Clear Button
+    document.querySelector('#searchForm button[type="button"]').addEventListener('click', () => {
+    
+        document.getElementById('searchBox').value = '';
+        document.getElementById('idsearch').value = '';
+        document.getElementById('namesearch').value = '';
+        document.getElementById('lnamesearch').value = '';
+        document.getElementById('phonesearch').value = '';
+        document.getElementById('mailsearch').value = '';
+
+        loadUser();
+    });
+
+    document.getElementById('logout').addEventListener('click', async() => {
+            const res = await fetch ('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

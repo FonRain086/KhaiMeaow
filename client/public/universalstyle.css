@@ -1,0 +1,236 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background-color: #d9faff;
+  /* พื้นฟ้าตามภาพ */
+  color: #222;
+
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 40px;
+  padding: 1px 20px;
+  margin: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+  width: 60px;
+  height: auto;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar a {
+  font-family: 'Paytone One', sans-serif;
+  color: #000;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+ul li {
+  border-radius: 26px;
+  transition: all 0.2s ease;
+}
+
+nav ul li:hover {
+  background: #FFD483;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke: 0.8px black;
+}
+
+nav ul li:hover {
+  background: #FFD483;
+  border-radius: 26px;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke: 0.8px black;
+  padding: 15px;
+}
+
+.navbar img:hover {
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+nav img {
+  width: 25px;
+  height: auto;
+}
+
+.hero {
+  text-align: center;
+  position: relative;
+  padding: 100px 16px;
+  background-image: url('img/cat thumbinal.jpg');
+  background-repeat: no-repeat;
+  /*ckground-position:center;
+  background-size: cover;
+  position: relative;
+  max-width: 800px;*/
+  background-position: right;
+}
+
+.hero-text button:hover {
+  background-color: rgb(0, 0, 0);
+  color: whitesmoke;
+  text-shadow: 0 0 10px #ffffff;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+.hero-cat {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+}
+
+.hero-text {
+  margin-top: -40px;
+}
+
+.hero h1 {
+  font-family: 'Paytone One', sans-serif;
+  font-size: 35.2px;
+  color: #000;
+  text-shadow: 2px 2px 2px #888888;
+}
+
+.hero button {
+  margin-top: 11.2px;
+  background-color: #FFC760;
+  border: none;
+  padding: 11.2px 24px;
+  border-radius: 25px;
+  font-family: 'Prompt', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.about {
+  text-align: center;
+  padding: 32px 16px;
+  background-color: #FFF5E4;
+  border-radius: 20px 20px 0 0;
+}
+
+/* about us box */
+.about-text {
+  border: 2px solid #cabdac;
+  border-radius: 10px;
+  padding: 25px;
+  margin: 0px auto;
+  max-width: 750px;
+  background-color: #ffffff;
+  box-shadow: 5px 5px 8px #929292;
+}
+
+.about h2 {
+  font-family: 'Paytone One', sans-serif;
+  font-size: 28.8px;
+  margin-bottom: 16px;
+}
+
+.about-box {
+  background: white;
+  padding: 19.2px;
+  margin: 0 auto;
+  width: 90%;
+  border-radius: 15px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  line-height: 27.2px;
+  text-align: justify;
+}
+
+.topicnews {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  padding-left: 15px;
+
+}
+
+footer {
+  background-color: #FFD483;
+  padding: 32px 16px;
+  text-align: left;
+}
+
+.footer-container {
+  max-width: 700px;
+  margin: 0 10px;
+}
+
+footer h3 {
+  font-family: 'Paytone One', sans-serif;
+  margin-bottom: 8px;
+}
+
+footer h4 {
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+footer p {
+  font-size: 13px;
+  line-height: 25.6px;
+}
+
+footer a {
+  color: #000;
+  text-decoration: none;
+}
+
+.social {
+  margin-top: 16px;
+}
+
+.social img {
+  width: 28px;
+  margin-right: 10px;
+}
+
+.social img:hover {
+  transform: scale(1.2);
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    margin: 10px;
+    padding: 10px 14px;
+    width: 90%;
+  }
+
+  .hero h1 {
+    font-size: 44.8px;
+  }
+
+  .hero button {
+    font-size: 17.6px;
+    padding: 12.8px 32px;
+  }
+
+  .about-box {
+    width: 70%;
+  }
+
+  footer {
+    text-align: left;
+  }
+}

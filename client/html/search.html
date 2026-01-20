@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/universalstyle.css">
+    <link rel="stylesheet" href="/moreBG.css">
+    <link rel="stylesheet" href="/search.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/catalog">Catalog</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/search/page" class="search"><img src="/img/icon-search.svg"></a></li>
+                <li><a href="/acc" class="search"><img src="/img/account-circle-svgrepo-com.svg"></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Background --><!-- Background -->
+    <div class="ellipse"></div>
+    <div class="bgContainer">
+
+        <!-- all of this page -->
+
+        <form id="searchbox">
+            <div>
+                <label for="commonsearch">Search</label>
+                <input type="text" name="commonsearch" id="commonsearch">
+            </div>
+            <div>
+                <label for="breedsearch">สายพันธุ์</label>
+                <input type="text" name="breedsearch" id="breedsearch">
+            </div>
+            <div>
+                <label for="agesearch">อายุ</label>
+                <input type="text" name="agesearch" id="agesearch">
+            </div>
+            <div>
+                <label for="habitsearch">นิสัย</label>
+                <input type="text" name="habitsearch" id="habitsearch">
+            </div>
+            <div>
+                <label for="colorsearch">สี</label>
+                <select name="colorsearch" id="colorsearch">
+                    <option value="allcolor">ทั้งหมด</option>
+
+                </select>
+            </div>
+
+            <section class="button">
+                <button onclick="SubmitSearch()">SEARCH</button>
+                <button onclick="ClearSearch()">CLEAR</button>
+            </section>
+
+        </form>
+
+        <div id="searchresponse"></div>
+        <div id="searchoutput"></div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                loadColors(); // load color after DOM
+
+                document.querySelector("#searchbox button[type='submit']").addEventListener('click', SubmitSearch);
+                document.querySelector("#searchbox button[type='button']").addEventListener('click', ClearSearch);
+            });
+
+            let searchres = document.querySelector("#searchresponse");
+            let output = document.querySelector("#searchoutput");
+            const imgurl = `http://localhost:8080/img/`;
+            const url = `http://localhost:8080/search`;
+
+
+            // auto add color to select-option
+            async function loadColors() {
+                try {
+                    const res = await fetch(url); // pull all data
+                    const data = await res.json();
+
+                    const colorSelect = document.getElementById('colorsearch');
+
+                    colorSelect.innerHTML = `<option value="allcolor">ทั้งหมด</option>`;
+
+                    // set of color (no duplicate)
+                    const colorSet = new Set();
+                    data.results.forEach(row => {
+                        if (row.CatColor) {
+                            const normalized = row.CatColor.trim().toLowerCase();
+                            colorSet.add(normalized);
+                        }
+                    });
+
+                    // add select and option
+                    colorSet.forEach(color => {
+                        const option = document.createElement('option');
+                        option.value = color;
+                        option.textContent = color.charAt(0).toUpperCase() + color.slice(1);
+                        colorSelect.appendChild(option);
+                    });
+
+                } catch (err) {
+                    console.error('Failed to load colors:', err);
+                }
+            }
+
+
+            async function SubmitSearch() {
+                event.preventDefault();
+
+                let commonsearch = document.querySelector("#commonsearch").value.trim();
+                let breed = document.querySelector("#breedsearch").value.trim();
+                let age = document.querySelector("#agesearch").value.trim();
+                let habit = document.querySelector("#habitsearch").value.trim();
+                let color = document.querySelector("#colorsearch").value;
+
+                const params = new URLSearchParams();
+
+                if (commonsearch !== "") {
+                    params.append('q', commonsearch);
+                }
+                if (breed !== "") {
+                    params.append('breed', breed);
+                }
+                if (age !== "") {
+                    params.append('age', age);
+                }
+                if (habit !== "") {
+                    params.append('habit', habit);
+                }
+                if (color !== "allcolor") {
+                    params.append('color', color);
+                }
+
+                const fullURL = `${url}?${params.toString()}`;
+
+                try {
+                    const response = await fetch(fullURL);
+                    if (!response.ok) {
+                        throw Error;
+                    }
+                    const data = await response.json();
+
+                    output.innerHTML = '';
+                    searchres.innerHTML = '';
+                    if (data.results && data.results.length > 0) {
+                        console.log(`Found cat`);
+                        if (params.toString() === "") { // no param = select all
+                            searchres.innerHTML = '<h1>Search> All</h1>';
+                        } else {
+                            searchres.innerHTML = `<h1>Search> ${data.results.length} results found</h1>`;
+                        }
+                        data.results.forEach(cat => {
+                            const card = document.createElement('div');
+                            card.className = 'cat-card';
+
+                            const img = `${imgurl}${cat.CatImg}`;
+                            card.innerHTML = `<img src="${img}" alt="${cat.CatName}">
+                                            <button onclick="window.location.href='${cat.CatDetailURL}'">
+                                            ดูรายละเอียด</button>`;
+                            output.appendChild(card);
+                        });
+                    } else {
+                        output.innerHTML = '<h1>No results found</h1>';
+                    }
+                } catch (error) {
+                    console.log('Search fail:', error);
+                }
+            }
+
+            function ClearSearch() {
+                output.innerHTML = '';
+                document.querySelector("#commonsearch").value = "";
+                document.querySelector("#breedsearch").value = "";
+                document.querySelector("#agesearch").value = "";
+                document.querySelector("#habitsearch").value = "";
+                document.querySelector("#colorsearch").value = "allcolor";
+                window.history.replaceState(null, '', '/search/page');
+            }
+
+        </script>
+
+
+        <!-- Footer-->
+        <footer>
+            <div class="footer-container">
+                <h3>KHAI MEAOW CO, Ltd</h3>
+                <h4>Contact</h4>
+                <p>อาคาร ICT, มหาวิทยาลัยมหิดล, 999 Phutthamonthon Sai 4 Rd, Salaya,<br>
+                    Phutthamonthon District, Nakhon Pathom 73170</p>
+                <p>Email: <a href="mailto:support.khaimeaow@gmail.com">support.khaimeaow@gmail.com</a><br>
+                    Tel: 0999999999<br>
+                    <a href="/acc">@Team Khaimeaow</a> 2025 All rights reserved.
+                </p>
+                <div class="social">
+                    <a href="https://www.instagram.com"><img src="/img/icon-instagram.svg"></a>
+                    <a href="https://www.facebook.com"><img src="/img/icon-facebook.svg"></a>
+                    <a href="https://www.tiktok.com"><img src="/img/icon-tiktok.svg"></a>
+                </div>
+
+            </div>
+        </footer>
+
+    </div>
+</body>
+
+</html>

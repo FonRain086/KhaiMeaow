@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/manageProduct.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li class="clickcomplete"><a href="/admin/manageProduct">Product</a></li>
+                <li><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!--Background--><!--Background-->
+    <div class="ellipse"></div>
+
+    <div class="bgContainer">
+
+        <div class="contentBox">
+            <h1 class="title">Product Management</h1>
+
+            <form id="searchForm" class="searchForm">
+                <div class="formRow">
+                    <div class="formGroup">
+                        <label for="searchBox">Search</label>
+                        <input type="text" name="searchBox" id="searchBox" placeholder="Search product...">
+                    </div>
+                    <div class="formGroup">
+                        <label for="idsearch">Cat ID</label>
+                        <input type="text" name="idsearch" id="idsearch">
+                    </div>
+                    <div class="formGroup">
+                        <label for="breedsearch">สายพันธุ์</label>
+                        <input type="text" name="breedsearch" id="breedsearch">
+                    </div>
+                    <div class="formGroup">
+                        <label for="agesearch">อายุ</label>
+                        <input type="text" name="agesearch" id="agesearch">
+                    </div>
+                    <div class="formGroup">
+                        <label for="habitsearch">นิสัย</label>
+                        <input type="text" name="habitsearch" id="habitsearch">
+                    </div>
+                    <div class="formGroup">
+                        <label for="colorsearch">สี</label>
+                        <select name="colorsearch" id="colorsearch">
+                            <option value="allcolor">ทั้งหมด</option>
+                        </select>
+                    </div>
+                    <div class="formGroup">
+                        <label for="statussearch">สถานะ</label>
+                        <select id="statussearch" name="statussearch">
+                            <option value="allstatus">ทั้งหมด</option>
+                            <option value="Available">Available</option>
+                            <option value="Sold Out">Sold Out</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btnGroup">
+                    <button type="submit" class="btn search">Search</button>
+                    <button type="button" class="btn clear">Clear</button>
+                </div>
+            </form>
+
+            <div class="addCatBox">
+                <button onclick="window.location.href='/admin/manageProduct/addCat'" class="btn addCat">Add Cat</button>
+            </div>
+
+            <div class="tableWrapper">
+
+                <!--  Display Table  -->
+                <table id="productTable">
+                    <thead>
+                        <tr>
+                            <th>CatID</th>
+                            <th>CatName</th>
+                            <th>CatBreed</th>
+                            <th>Gender</th>
+                            <th>CatColor</th>
+                            <th>Birthdate</th>
+                            <th>Price</th>
+                            <th>CatStatus</th>
+                            <th>Descript</th>
+                            <th>CatImg</th>
+                            <th>CatDetailURL</th>
+                            <th>OrderID</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        fetch('http://localhost:8080/check-auth', { 
+            credentials: 'include' 
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            console.log("Authorized as:", data.user.email);
+        }).catch(() => {
+            window.location.href = 'http://localhost:3030/acc'; 
+        });
+        
+        const tableBody = document.querySelector('#productTable tbody');
+
+        function getBirthYearFromAge(age) {
+            const currentYear = new Date().getFullYear();
+            return currentYear - age;
+        }
+
+        async function loadColors() {
+            try {
+                
+                const res = await fetch('http://localhost:8080/api/products', {
+                    credentials: 'include'
+                }); // pull all data
+                const data = await res.json();
+
+                const colorSelect = document.getElementById('colorsearch');
+
+                colorSelect.innerHTML = `<option value="allcolor">ทั้งหมด</option>`;
+
+                // set of color (no duplicate)
+                const colorSet = new Set();
+                data.forEach(row => {
+                    if (row.CatColor) {
+                        const normalized = row.CatColor.trim().toLowerCase();
+                        colorSet.add(normalized);
+                    } 
+                });
+
+                // add select and option
+                colorSet.forEach(color => {
+                    const option = document.createElement('option');
+                    option.value = color;
+                    option.textContent = color.charAt(0).toUpperCase() + color.slice(1);
+                    colorSelect.appendChild(option);
+                });
+
+            } catch (err) {
+                location = 'http://localhost:3030/acc'
+                console.error('Failed to load colors:', err);
+            }
+        }
+
+        // Load Data
+        function loadProducts(keyword = '') {
+            
+            const url = keyword ? `http://localhost:8080/api/products?${keyword}`
+                                : `http://localhost:8080/api/products`;
+            fetch(url, {
+                credentials: 'include'
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Data fetched:', data);
+                    tableBody.innerHTML = ''; // clear table
+
+                    if (data.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="8">Not Found</td></tr>`;
+                        return;
+                    }
+
+                    // display table
+                    let html = '';
+                    data.forEach(row => {
+                        html += `
+                        <tr>
+                            <td>${row.CatID}</td>
+                            <td>${row.CatName}</td>
+                            <td>${row.CatBreed}</td>
+                            <td>${row.Gender}</td>
+                            <td>${row.CatColor}</td>
+                            <td>${row.Birthdate}</td>
+                            <td>${row.Price}</td>
+                            <td>${row.CatStatus}</td>
+                            <td>${row.Descript}</td>
+                            <td>${row.CatImg}</td>
+                            <td>${row.CatDetailURL}</td>
+                            <td>${row.OrderID}</td>
+                            <td>
+                                <button onclick="editProduct(${row.CatID})">Edit</button>
+                            </td>
+                        </tr>
+                        `;
+                    });
+
+                    tableBody.innerHTML = html;
+                })
+                .catch(err => {
+                    location = 'http://localhost:3030/acc';
+                    console.log('An error occurred while loading data:', err)
+                });
+        }
+
+        function editProduct(catID) {
+            // redirect to edit page for own id
+            window.location.href = `/admin/manageProduct/editCat?id=${catID}`;
+        }
+
+        // call load Products function
+        loadColors().then(() => loadProducts());
+
+        // Event Search Form
+        document.getElementById('searchForm').addEventListener('submit', e => {
+            e.preventDefault();
+
+            const params = new URLSearchParams();
+
+            let q = document.getElementById('searchBox').value.trim();
+            let cid = document.getElementById('idsearch').value.trim();
+            let breed = document.getElementById('breedsearch').value.trim();
+            let age = document.getElementById('agesearch').value.trim();
+            let habit = document.getElementById('habitsearch').value.trim();
+            let color = document.getElementById('colorsearch').value;
+            let status = document.getElementById('statussearch').value;
+
+            if (q) params.append("q", q);
+            if (cid) params.append("CatID", cid);
+            if (breed) params.append("CatBreed", breed);
+            if (habit) params.append("Descript", habit);
+            if (color != "allcolor") params.append("CatColor", color);
+            if (status != "allstatus") params.append("CatStatus", status);
+            
+            if (age) {
+                const birthYear = getBirthYearFromAge(age);
+                params.append("Birthdate", birthYear);
+            }
+
+            loadProducts(params.toString());
+        });
+
+        // Clear Button
+    document.querySelector('#searchForm button[type="button"]').addEventListener('click', () => {
+    
+        document.getElementById('searchBox').value = '';
+        document.getElementById('breedsearch').value = '';
+        document.getElementById('agesearch').value = '';
+        document.getElementById('habitsearch').value = '';
+        document.getElementById('colorsearch').value = 'allcolor';
+
+        loadProducts();
+    });
+
+    document.getElementById('logout').addEventListener('click', async() => {
+            const res = await fetch ('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+
+    </script>
+
+</body>
+</html>
+<!-- ระบบเพิ่มสีอัตโนมัติ -->

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/universalstyle.css">
+    <link rel="stylesheet" href="/home.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/home"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/catalog">Catalog</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/search/page" class="search"><img src="/img/icon-search.svg"></a></li>
+                <li><a href="/acc" class="search"><img src="/img/account-circle-svgrepo-com.svg"></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>KHAI MEAOW</h1>
+            <button type="button" onclick="window.location.href='/catalog'">เยี่ยมชมแมวของเรา</button>
+        </div>
+    </section>
+
+    <section class="about">
+        <h2>About us</h2>
+        <div class="about-text">
+            <p>
+                หากคุณกำลังมองหา เพื่อนรักตัวน้อย ที่จะมาเติมเต็มชีวิตด้วยความอบอุ่น รอยยิ้ม และเสียงร้องอ้อนๆ
+                คุณมาถูกที่แล้วที่ KHAI MEAOW เราไม่ใช่แค่เพาะพันธุ์แมวแต่เราเป็นครอบครัวของแมว
+                ผู้ที่เข้าใจและใส่ใจทุกรายละเอียดเล็กๆ
+                ของการดูแลแมวอย่างแท้จริง
+                ตั้งแต่การเลือกคู่พันธุ์ที่มีคุณภาพจนถึงการเลี้ยงดูแมวตัวน้อยให้เติบโตอย่างมีสุขภาพดี
+                ปลอดภัย เต็มไปด้วยรัก เรามีเป้าหมายที่จะส่งต่อความอบอุ่น ความสุข และเสียงหัวเราะ
+                ผ่านแมวแสนรู้ที่พร้อมจะไปอยู่กับคุณ
+            </p>
+        </div>
+    </section>
+
+    <!--  this api limit 20 requests perday  -->
+    <!--  sometimes may load around 30 seconds - 2 minutes  -->
+    <div class="topicnews">
+        <h2>ข่าวแมววันนี้</h2>
+    </div>
+    <div id="catnews"></div>
+   
+    <script>
+        const API_KEY = "2ISsnOEbpKtp73CR7JycVYhNBSFfDscFjq_ZaYZLfHpomFNH"; //API ของ Currents API
+
+        function getCatNews() {
+
+            let url = `https://api.currentsapi.services/v1/search?keywords=kitten&language=en&apiKey=${API_KEY}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+
+                    let output = "";
+
+                    data.news.forEach(item => {
+                        output += `
+                            <div class="news-card">
+                                <div class="news-content">
+                                    <h3>${item.title}</h3>
+                                    <p>${item.description || ""}</p>
+                                    <a href="${item.url}" target="_blank">อ่านต่อ</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    document.querySelector("#catnews").innerHTML = output;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.querySelector("#catnews").innerHTML = "<p>โหลดข่าวไม่ได้</p>";
+                });
+        }
+        getCatNews();
+    </script>
+
+    <!-- Footer-->
+    <footer>
+        <div class="footer-container">
+            <h3>KHAI MEAOW CO, Ltd</h3>
+            <h4>Contact</h4>
+            <p>อาคาร ICT, มหาวิทยาลัยมหิดล, 999 Phutthamonthon Sai 4 Rd, Salaya,<br>
+                Phutthamonthon District, Nakhon Pathom 73170</p>
+            <p>Email: <a href="mailto:support.khaimeaow@gmail.com">support.khaimeaow@gmail.com</a><br>
+                Tel: 0999999999<br>
+                <a href="/acc">@Team Khaimeaow</a> 2025 All rights reserved.
+            </p>
+            <div class="social">
+                <a href="https://www.instagram.com"><img src="img/icon-instagram.svg"></a>
+                <a href="https://www.facebook.com"><img src="img/icon-facebook.svg"></a>
+                <a href="https://www.tiktok.com"><img src="img/icon-tiktok.svg"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

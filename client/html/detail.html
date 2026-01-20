@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/universalstyle.css">
+    <link rel="stylesheet" href="/detail.css">
+    <link rel="stylesheet" href="/moreBG.css">
+    <link rel="icon" type="image/png" href="img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">
+            <a href="/home"><img src="/img/logokhaimeaow.svg" alt="Logo"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/catalog">Catalog</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/search/page" class="search"><img src="/img/icon-search.svg" alt="Search"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="ellipse"></div>
+    <div class="bgContainer">
+        <div id="cat-detail" class="cat-detail"></div>
+    </div>
+
+    <script>
+        async function loadDetail() {
+            try {
+                const pathParts = window.location.pathname.split('/');
+                const catId = pathParts[pathParts.length - 1];
+                const backendURL = "http://localhost:8080";
+                const imgurl = "http://localhost:8080/img/";
+                const res = await fetch(`${backendURL}/catalog/detail/${catId}`);
+
+                const cat = await res.json();
+
+                // Cat age
+                const birthDate = new Date(cat.Birthdate);
+                let age = new Date().getFullYear() - birthDate.getFullYear();
+
+                const container = document.querySelector("#cat-detail");
+
+                container.innerHTML = `
+                <div class="container">
+                    <div class="id-left">
+                        <img class="cat-img" src="${imgurl}${cat.CatImg}" alt="${cat.CatName}">
+                        <p class="cat-id">ไอดีแมว : ${cat.CatID}</p>
+                    </div>
+
+                    <div class="info-box">
+                        <p><strong>Name : </strong> ${cat.CatName}</p>
+                        <p><strong>Gender : </strong> ${cat.Gender}</p>
+                        <p><strong>Color : </strong> ${cat.CatColor}</p>
+                        <p><strong>Age :</strong> ${age} ปี</p>
+                        <p><strong>Price : </strong> ${cat.Price} บาท</p>
+                        <p><strong>Descript : </strong> ${cat.Descript}</p>
+                        <button class="buy-btn" onclick="alert('ขอบคุณที่ซื้อ น้อง${cat.CatName} นะคะ! ₍^•⩊•^₎ ❤︎')">ซื้อเลย</button>
+                    </div>
+                </div>
+                `;
+            } catch (error) {
+                console.log('Not found');
+            }
+        }
+        loadDetail();
+    </script>
+
+    <footer>
+        <div class="footer-container">
+            <h3>KHAI MEAOW CO, Ltd</h3>
+            <h4>Contact</h4>
+            <p>อาคาร ICT, มหาวิทยาลัยมหิดล, 999 Phutthamonthon Sai 4 Rd, Salaya,<br>
+                Phutthamonthon District, Nakhon Pathom 73170</p>
+            <p>Email: <a href="mailto:support.khaimeaow@gmail.com">support.khaimeaow@gmail.com</a><br>
+                Tel: 0999999999<br>
+                <a href="/acc">@Team Khaimeaow</a> 2025 All rights reserved.
+            </p>
+            <div class="social">
+                <a href="https://www.instagram.com"><img src="/img/icon-instagram.svg"></a>
+                <a href="https://www.facebook.com"><img src="/img/icon-facebook.svg"></a>
+                <a href="https://www.tiktok.com"><img src="/img/icon-tiktok.svg"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

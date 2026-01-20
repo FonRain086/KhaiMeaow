@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/editProduct.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li class="clickcomplete"><a href="/admin/manageProduct">Product</a></li>
+                <li><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="ellipse"></div>
+
+    <div class="bgContainer">
+        <div class="pageBox">
+
+            <h2 class="title">Edit Product</h2>
+
+            <div class="formBox">
+                <form id="editCatForm" enctype="multipart/form-data">
+
+                    <label class="formLabel"><span id="catIDLabel"></span></label><br>
+
+                    <label class="formLabel" for="CatName">ชื่อ</label>
+                    <input type="text" id="CatName" name="CatName" class="formInput">
+
+                    <label class="formLabel" for="CatBreed">สายพันธุ์</label>
+                    <input type="text" id="CatBreed" name="CatBreed" class="formInput" oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase()">
+
+                    <label class="formLabel" for="Gender">เพศ</label>
+                    <select id="Gender" name="Gender" class="formInput">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+
+                    <label class="formLabel" for="CatColor">สี</label>
+                    <input type="text" id="CatColor" name="CatColor" class="formInput" oninput="this.value = this.value.toLowerCase()">
+
+                    <label class="formLabel" for="Birthdate">วันเกิด</label>
+                    <input type="date" id="Birthdate" name="Birthdate" class="formInput">
+
+                    <label class="formLabel" for="Price">ราคา</label>
+                    <input type="number" id="Price" name="Price" class="formInput">
+
+                    <label class="formLabel" for="CatStatus">สถานะ</label>
+                    <select id="CatStatus" name="CatStatus" class="formInput">
+                        <option value="Available">Available</option>
+                        <option value="Sold Out">Sold Out</option>
+                    </select>
+
+                    <label class="formLabel" for="Descript">คำอธิบาย</label>
+                    <textarea id="Descript" name="Descript" class="formInput"></textarea>
+
+                    <label class="formLabel" for="CatImg">รูปภาพ</label>
+                    <img id="previewImg" class="previewImg">
+                    <input type="file" id="CatImg" name="CatImg" accept="image/*" class="formInput">
+
+                    <div class="btnRow">
+                        <button type="button" id="deleteBtn" class="deleteBtn">Remove</button>
+                        <button type="button" class="cancelBtn"
+                            onclick="window.location.href='/admin/manageProduct'">Cancel</button>
+                        <button type="submit" class="submitBtn">Confirm</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        fetch('http://localhost:8080/check-auth', { 
+            credentials: 'include' 
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            console.log("Authorized as:", data.user.email);
+        }).catch(() => {
+            window.location.href = 'http://localhost:3030/acc'; 
+        });
+
+        const urlParams = new URLSearchParams(window.location.search)
+        const catID = urlParams.get('id');
+        const form = document.getElementById('editCatForm')
+
+        const catIDLabel = document.getElementById('catIDLabel');
+        catIDLabel.textContent = `Cat ID: ${catID}`
+
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            try {
+                const formData = new FormData();
+
+                if (form.CatName.value) formData.append("CatName", form.CatName.value);
+                if (form.CatBreed.value) formData.append("CatBreed", form.CatBreed.value);
+                if (form.Gender.value) formData.append("Gender", form.Gender.value);
+                if (form.CatColor.value) formData.append("CatColor", form.CatColor.value);
+                if (form.Birthdate.value) formData.append("Birthdate", form.Birthdate.value);
+                if (form.Price.value) formData.append("Price", form.Price.value);
+                if (form.CatStatus.value) formData.append("CatStatus", form.CatStatus.value);
+                if (form.Descript.value) formData.append("Descript", form.Descript.value);
+
+                if (form.CatImg.files.length > 0) {
+                    formData.append("CatImg", form.CatImg.files[0]);
+                }
+
+                const putRes = await fetch(`http://localhost:8080/api/products/${catID}`, {
+                    method : 'PUT',
+                    body : formData,
+                    credentials: 'include'
+                });
+                if (putRes.status === 401 || putRes.status === 403) {
+                    window.location.href = 'http://localhost:3030/acc';
+                    return;
+                }
+
+                const data = await putRes.json();
+                alert(data.message);
+                window.location.href = '/admin/manageProduct';
+
+            } catch (err) {
+                console.error('Error editing cat:', err);
+                alert('ERROR: ' + err.message);
+            }
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            if (!confirm('Confirm delete?')) return;
+
+            try {
+                const delRes = await fetch(`http://localhost:8080/api/products/${catID}`, {
+                    method : 'DELETE',
+                    credentials: 'include'
+                });
+                if (delRes.status === 401 || delRes.status === 403) {
+                    window.location.href = 'http://localhost:3030/acc';
+                    return;
+                }
+                if (!delRes.ok) throw new Error('Failed to delete');
+
+                const data = await delRes.json();
+                alert(data.message);
+                window.location.href = '/admin/manageProduct';
+
+            } catch (err) {
+                console.error('Error deleting cat:', err);
+                alert('ERROR: ' + err.message);
+            }
+        });
+
+        document.getElementById('logout').addEventListener('click', async() => {
+            const res = await fetch ('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+
+        
+    </script>
+
+</body>
+
+</html>

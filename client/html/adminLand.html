@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/adminBG.css">
+    <link rel="stylesheet" href="/adminLand.css">
+
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/admin/manageProduct">Product</a></li>
+                <li><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Background --><!-- Background -->
+    <div class="ellipse"></div>
+    <div class="bgContainer">
+        <div class="adminLandContainer">
+            <h1>Welcome</h1>
+            <h2>Admin Dashboard</h2>
+            <h2 id="adminmsg"></h2>
+            <ul>
+                <li><a href="/admin/manageProduct" id="totalProducts">Total Products: </a></li>
+                <li><a href="/admin/manageUser" id="totalUsers">Total Users: </a></li>
+            </ul>
+            
+        </div>
+        
+
+    </div>
+
+    <script>
+        
+        fetch('http://localhost:8080/check-auth', { //check-auth before render page
+            credentials: 'include'
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            document.getElementById('adminmsg').innerText = `Hello! ${data.user.email}`;
+        })
+        .catch(() => {
+            window.location.href = 'http://localhost:3030/acc'; // back to login page if not auth
+        });
+
+
+        async function loadCount() {
+            try {
+                const prodRes = await fetch('http://localhost:8080/api/products', {
+                    credentials: 'include'
+                });
+                if (prodRes.status === 401 || prodRes.status === 403) {
+                    window.location.href = 'http://localhost:3030/acc';
+                    return;
+                }
+                if (!prodRes.ok) throw new Error('Unauthorized products');
+                const products = await prodRes.json();
+                document.getElementById('totalProducts').textContent = `Total Products: ${products.length}`
+
+                const userRes = await fetch('http://localhost:8080/api/users', {
+                    credentials: 'include'
+                });
+                if (userRes.status === 401 || userRes.status === 403) {
+                    window.location.href = 'http://localhost:3030/acc';
+                    return;
+                }
+                if (!userRes.ok) throw new Error('Unauthorized users');
+                const users = await userRes.json();
+                document.getElementById('totalUsers').textContent = `Total Users: ${users.length}`
+            
+            } catch (err) {
+                console.error('Error loading counts:', err)
+            }
+        }
+
+        loadCount();
+
+        document.getElementById('logout').addEventListener('click', async() => {
+            const res = await fetch ('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+    </script>
+    
+</body>
+</html>

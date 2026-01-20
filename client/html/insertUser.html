@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/insertUser.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/admin/manageProduct">Product</a></li>
+                <li class="clickcomplete"><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Background -->
+    <div class="ellipse"></div>
+
+    <div class="bgContainer">
+        <div class="pageBox">
+
+            <h1 class="title">Add User</h1>
+
+            <form id="addUserForm" class="formBox">
+
+                <label class="formLabel" for="Admin_Firstname">ชื่อ</label>
+                <input class="formInput" type="text" id="Admin_Firstname" name="Admin_Firstname" placeholder="ชื่อ"
+                    required>
+
+                <label class="formLabel" for="Admin_Lastname">นามสกุล</label>
+                <input class="formInput" type="text" id="Admin_Lastname" name="Admin_Lastname" placeholder="นามสกุล"
+                    required>
+
+                <label class="formLabel" for="Admin_Email">Email</label>
+                <input class="formInput" type="email" id="Admin_Email" name="Admin_Email" placeholder="Email" required>
+
+                <label class="formLabel" for="Admin_Phone">เบอร์โทรศัพท์</label>
+                <input class="formInput" type="tel" id="Admin_Phone" name="Admin_Phone" placeholder="เบอร์โทรศัพท์"
+                    pattern="0[0-9]{9}" title="0XXXXXXXXX" required>
+
+                <h3 class="subTitle">กำหนดรหัสผ่าน</h3>
+
+                <label class="formLabel" for="Admin_Password">Password</label>
+                <input class="formInput" type="password" id="Admin_Password" name="Admin_Password"
+                    placeholder="Password" required>
+
+                <label class="formLabel" for="Admin_Password_Confirm">Confirm Password</label>
+                <input class="formInput" type="password" id="Admin_Password_Confirm" name="Admin_Password_Confirm"
+                    placeholder="Confirm Password" required>
+
+                <div class="btnRow">
+                    <button type="button" class="cancelBtn"
+                        onclick="window.location.href='/admin/manageUser'">Cancel</button>
+                    <button type="submit" class="submitBtn">Confirm</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+
+        fetch('http://localhost:8080/check-auth', {
+            credentials: 'include'
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            console.log("Authorized as:", data.user.email);
+        }).catch(() => {
+            window.location.href = 'http://localhost:3030/acc';
+        });
+
+        document.getElementById('addUserForm').addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const password = document.getElementById('Admin_Password').value;
+            const confirmPasswd = document.getElementById('Admin_Password_Confirm').value;
+
+            if (password != confirmPasswd) {
+                alert('Passwords do NOT MATCH! Please try again.')
+                return;
+            }
+
+            const form = document.getElementById('addUserForm');
+            const formData = new FormData(form);
+
+            try {
+                // POST Cat
+                const postRes = await fetch('http://localhost:8080/api/users', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const postData = await postRes.json();
+                if (postRes.status === 401 || postRes.status === 403) {
+                    window.location = 'http://localhost:3030/acc';
+                    return;
+                }
+                // Check ID Return?
+                if (!postData.id) throw new Error("No ID returned from server");
+
+
+                alert(`User added ID: ${postData.id}`);
+                form.reset();
+
+            } catch (err) {
+                console.error('Error inserting user:', err);
+                alert('ERROR: ' + err.message);
+            }
+
+
+        });
+
+        document.getElementById('logout').addEventListener('click', async () => {
+            const res = await fetch('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200) {
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

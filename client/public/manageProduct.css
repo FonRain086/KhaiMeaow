@@ -1,0 +1,224 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Prompt', sans-serif;
+    background: #FFD27E;
+    color: #222;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    margin: 16px;
+    padding: 12px 24px;
+    border-radius: 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .1);
+}
+
+.logo img {
+    width: 60px;
+}
+
+.navbar ul {
+    display: flex;
+    list-style: none;
+    gap: 24px;
+    align-items: center;
+}
+
+.navbar a {
+    font-family: 'Paytone One', sans-serif;
+    font-size: 18px;
+    text-decoration: none;
+    color: #000;
+}
+
+.navbar li {
+    border-radius: 26px;
+    transition: .2s ease;
+}
+
+.navbar li:hover,
+.clickcomplete {
+    background: #ECCBD9;
+    padding: 15px;
+    border-radius: 26px;
+    -webkit-text-fill-color: white;
+    -webkit-text-stroke: 0.8px black;
+}
+
+nav img {
+    width: 25px;
+    transition: .3s;
+}
+
+nav img:hover {
+    transform: scale(1.1);
+}
+
+.ellipse {
+    width: 100%;
+    background: #FFFDF0;
+    border-top-left-radius: 38%;
+    border-top-right-radius: 38%;
+    padding: 5%;
+}
+
+/* MAIN */
+.bgContainer {
+    display: flex;
+    justify-content: center;
+    background: #FFFDF0;
+    padding: 40px 5vw;
+}
+
+.contentBox {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.title {
+    text-align: center;
+    font-family: 'Paytone One';
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+/* SEARCH FORM */
+.searchForm {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    margin-bottom: 20px;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 16px;
+}
+
+.formGroup label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.formGroup input,
+.formGroup select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.btnGroup {
+    display: flex;
+    gap: 12px;
+    justify-content: right;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn.search {
+    background: #ECCBD9;
+    color: #000000;
+}
+
+.btn.search:hover {
+    background: #d994c3;
+}
+
+.btn.clear {
+    background: #ccc;
+}
+
+.btn.clear:hover {
+    background: #b7b7b7;
+}
+
+/* ADD CAT BUTTON */
+.addCatBox {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.addCat {
+    background: #ECCBD9;
+    color: rgb(0, 0, 0);
+}
+
+.addCat:hover {
+    background: #d994c3;
+}
+
+/* TABLE */
+.tableWrapper {
+    overflow-x: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #ECCBD9;
+}
+
+thead th {
+    padding: 10px;
+    text-align: left;
+}
+
+tbody td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+tbody button {
+    padding: 6px 12px;
+    border: none;
+    background: #ECCBD9;
+    color: rgb(0, 0, 0);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+tbody button:hover {
+    background: #d994c3;
+}
+
+#logout {
+    background: transparent;
+    border: none;
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        flex-direction: column;
+        padding: 16px;
+        border-radius: 30px;
+    }
+}

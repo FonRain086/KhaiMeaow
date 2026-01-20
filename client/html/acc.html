@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/universalstyle.css">
+    <link rel="stylesheet" href="/moreBG.css">
+    <link rel="stylesheet" href="/login.css">
+
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/home"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/catalog">Catalog</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/search/page" class="search" ><img src="/img/icon-search.svg"></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Background --><!-- Background -->
+    <div class="ellipse"></div>
+    <div class="bgContainer">
+
+        <!-- all of this page -->
+        <!-- Login Form -->
+        <section class="login-section">
+            <h1>LOGIN</h1>
+            <form class="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <div id="logintext"></div>
+                <button type="submit">Log in</button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+
+        let loginBtnRef = document.querySelector(".login-form");
+
+        loginBtnRef.addEventListener("submit", async function(e){
+            e.preventDefault();
+            const email = document.getElementById('email').value
+            const password = document.getElementById('password').value
+
+            const res = await fetch('http://localhost:8080/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password}),
+                credentials: 'include'
+            });
+            const result = await res.json();
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/admin';
+            }else{
+                document.getElementById('logintext').innerHTML = `<h4>${result.message || 'Login Failed'}</h4>`;
+            }
+
+        })
+    </script>
+
+
+
+
+
+
+    <!-- Footer-->
+    <footer>
+        <div class="footer-container">
+            <h3>KHAI MEAOW CO, Ltd</h3>
+            <h4>Contact</h4>
+            <p>อาคาร ICT, มหาวิทยาลัยมหิดล, 999 Phutthamonthon Sai 4 Rd, Salaya,<br>
+                Phutthamonthon District, Nakhon Pathom 73170</p>
+            <p>Email: <a href="mailto:support.khaimeaow@gmail.com">support.khaimeaow@gmail.com</a><br>
+                Tel: 0999999999<br>
+                <a href="/acc">@Team Khaimeaow</a> 2025 All rights reserved.
+            </p>
+            <div class="social">
+                <a href="https://www.instagram.com"><img src="img/icon-instagram.svg"></a>
+                <a href="https://www.facebook.com"><img src="img/icon-facebook.svg"></a>
+                <a href="https://www.tiktok.com"><img src="img/icon-tiktok.svg"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

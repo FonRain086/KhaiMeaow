@@ -1,0 +1,28 @@
+.ellipse {
+    width: 100%;
+    height: 100%;
+    background-color: #FFFDF0;
+    border-top-left-radius: 38%;
+    border-top-right-radius: 38%;
+    padding: 5%;
+    text-align: center;
+    z-index: -1; /*send to backward*/
+}
+
+.bgContainer {
+    background-color: #FFFDF0;
+}
+.ellipse {
+    width: 100%;
+    height: 100%;
+    background-color: #FFFDF0;
+    border-top-left-radius: 38%;
+    border-top-right-radius: 38%;
+    padding: 5%;
+    text-align: center;
+    z-index: -1; /*send to backward*/
+}
+
+.bgContainer {
+    background-color: #FFFDF0;
+}

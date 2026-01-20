@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHAI MEAOW</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/insertProduct.css">
+    <link rel="icon" type="image/png" href="/img/logokhaimeaow.svg">
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="/admin"><img src="/img/logokhaimeaow.svg"></a>
+        </div>
+        <nav>
+            <ul>
+                <li class="clickcomplete"><a href="/admin/manageProduct">Product</a></li>
+                <li><a href="/admin/manageUser">User</a></li>
+                <li><button id="logout"><img src="/img/icon-logout.png"></button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="ellipse"></div>
+
+    <div class="bgContainer">
+        <div class="pageBox">
+
+            <h2 class="title">Add Product</h2>
+
+            <form id="addCatForm" enctype="multipart/form-data" class="formBox">
+
+                <label class="formLabel" for="CatName">ชื่อ</label>
+                <input class="formInput" type="text" id="CatName" name="CatName" placeholder="ชื่อแมว" required>
+
+                <label class="formLabel" for="CatBreed">สายพันธุ์</label>
+                <input class="formInput" type="text" id="CatBreed" name="CatBreed" placeholder="สายพันธุ์" required oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase()">
+
+                <label class="formLabel" for="Gender">เพศ</label>
+                <select id="Gender" name="Gender" class="formInput">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+
+                <label class="formLabel" for="CatColor">สี</label>
+                <input class="formInput" type="text" id="CatColor" name="CatColor" placeholder="สี" required oninput="this.value = this.value.toLowerCase()">
+
+                <label class="formLabel" for="Birthdate">วันเกิด</label>
+                <input class="formInput" type="date" id="Birthdate" name="Birthdate" required>
+
+                <label class="formLabel" for="Price">ราคา</label>
+                <input class="formInput" type="number" id="Price" name="Price" placeholder="ราคา" required>
+
+                <label class="formLabel" for="CatStatus">สถานะ</label>
+                <select id="CatStatus" name="CatStatus" class="formInput">
+                    <option value="Available">Available</option>
+                    <option value="Sold Out">Sold Out</option>
+                </select>
+
+                <label class="formLabel" for="Descript">คำอธิบาย</label>
+                <input class="formInput" type="text" id="Descript" name="Descript" placeholder="คำอธิบาย" required>
+
+                <label class="formLabel" for="CatImg">รูปภาพ</label>
+                <input class="formInput" type="file" id="CatImg" name="CatImg" accept="image/*">
+
+                <div class="btnRow">
+                    <button type="button" class="cancelBtn"
+                        onclick="window.location.href='/admin/manageProduct'">Cancel</button>
+                    <button type="submit" class="submitBtn">Confirm</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+
+        fetch('http://localhost:8080/check-auth', { 
+            credentials: 'include' 
+        }).then(res => {
+            if (!res.ok) throw new Error('Not Authorized');
+            return res.json();
+        }).then(data => {
+            console.log("Authorized as:", data.user.email);
+        }).catch(() => {
+            window.location.href = 'http://localhost:3030/acc'; 
+        });
+
+        document.getElementById('addCatForm').addEventListener('submit', async e => {
+            e.preventDefault();
+
+            const form = document.getElementById('addCatForm');
+            const formData = new FormData(form);
+
+            try {
+                // POST Cat
+                const postRes = await fetch('http://localhost:8080/api/products', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const postData = await postRes.json();
+                if (postRes.status === 401 || postRes.status === 403) {
+                    window.location = 'http://localhost:3030/acc';
+                    return;
+                }
+                // Check ID Return?
+                if (!postData.id) throw new Error("No ID returned from server");
+
+                // console.log("POST Return:", postData);
+
+                // PUT CatDetailURL
+                const putRes = await fetch(`http://localhost:8080/api/products/${postData.id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ CatDetailURL : `/catalog/${postData.id}` }),
+                    credentials: 'include'  
+                });
+
+                const putData = await putRes.json();
+                if (putRes.status === 401 || putRes.status === 403) {
+                    window.location = 'http://localhost:3030/acc';
+                    return;
+                }
+                if (putRes.status !== 200) throw new Error(putData.error || 'Failed to update CatDetailURL');
+
+                alert(`Cat added ID: ${postData.id}`);
+                form.reset();
+
+            } catch (err) {
+                console.error('Error inserting cat:', err);
+                alert('ERROR: ' + err.message);
+            }
+            
+        });
+
+        document.getElementById('logout').addEventListener('click', async() => {
+            const res = await fetch ('http://localhost:8080/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (res.status === 200){
+                window.location.href = 'http://localhost:3030/acc';
+            }
+        });
+
+    </script>
+
+</body>
+</html>

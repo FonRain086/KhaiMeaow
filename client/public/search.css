@@ -1,0 +1,177 @@
+#searchbox {
+  width: 100%;
+  height: 100%;
+  padding: 2%;
+  text-align: center;
+}
+
+#searchbox div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 2%;
+}
+
+#searchbox input,
+select {
+  margin-left: 3%;
+  width: 50%;
+  height: 40px;
+  border-radius: 10px;
+  border-color: #6BD2E2;
+}
+
+#searchbox button {
+  width: 25%;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  margin: 3%;
+  color: black;
+  background-color: #ECCBD9;
+}
+
+#searchbox button:active {
+  background-color: white;
+}
+
+#searchbox label {
+  width: 60px;
+  /* ระยะห่าง label กับ input */
+  font-weight: 500;
+  text-align: left;
+}
+
+
+#breedsearch,
+#agesearch,
+#habitsearch {
+  background-color: rgba(107, 210, 226, 0.5);
+}
+
+#colorsearch {
+  background-color: #6BD2E2;
+  color: black;
+  text-align: center;
+}
+
+#colorsearch:hover {
+  background-color: white;
+}
+
+#searchoutput {
+  padding: 25px 40px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.cat-card {
+  position: relative;
+  border-radius: 20px;
+  height: 350px;
+  width: 350px;
+  box-shadow: 0 2px 8px;
+  overflow: hidden;
+  text-align: center;
+  margin: 2%;
+}
+
+.cat-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.cat-card button {
+  font-family: 'Prompt', sans-serif;
+  font-size: 16px;
+  border-radius: 20px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: #ECCBD9;
+  border: none;
+  padding: 10px 55px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cat-card button:hover {
+  background-color: #D56974;
+  transform: translate(-50%, -5px)scale(1.05);
+}
+
+#searchresponse {
+  margin-left: 7%;
+}
+
+@media (max-width: 768px) {
+  #searchbox {
+    padding: 5%;
+    /* border-top-left-radius: 150px;
+    border-top-right-radius: 150px; */
+  }
+
+  #searchbox div {
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 3%;
+  }
+
+  #searchbox input,
+  select {
+    width: 70%;
+  }
+
+  #searchbox label {
+    margin-right: 50%;
+  }
+
+  #searchbox section {
+    text-align: center;
+    width: 100%;
+    margin: auto;
+    margin-top: 3%;
+    justify-content: center;
+  }
+
+  #searchoutput {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 20px;
+    overflow-x: auto;
+    gap: 13%;
+    align-items: center;
+  }
+
+  .cat-card {
+    flex: 0 0 250px;
+    height: 300px;
+    width: 300px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 2%;
+  }
+
+  .cat-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cat-card button {
+    font-size: 14px;
+    padding: 1px 50px;
+    margin-bottom: 10px;
+    align-self: center;
+    bottom: 6px;
+  }
+}
